@@ -16,9 +16,31 @@
 
   <button onclick="loadData()">Load Data</button>
   <div id="displayData"></div>
-
+<!-- 
   <script src="https://www.gstatic.com/firebasejs/9.6.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.2/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.2/firebase-firestore.js"></script> -->
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyC0TKsUEySiG7W5jugKqIk8jk-tFdRfUcI",
+    authDomain: "https://nghanwei.github.io/testing.github.io/",
+    projectId: "sharing-links-16bba",
+    storageBucket: "sharing-links-16bba.appspot.com",
+    messagingSenderId: "344679586570",
+    appId: "1:344679586570:web:4ec00d7fe4956531fcb8f3",
+    measurementId: "G-PS13FLQYQH"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  </script>
   <script src="script.js"></script>
 </body>
 </html>
