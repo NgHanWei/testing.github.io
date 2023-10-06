@@ -19,8 +19,16 @@
   <button onclick="loadData()">Load Data</button>
   <div id="displayData"></div>
   <script type="module">
-  import { initializeApp } from "firebase/app";
-  import { getFirestore } from "firebase/firestore";
+  // import { initializeApp } from "firebase/app";
+  // import { getFirestore } from "firebase/firestore";
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js'
+
+  // If you enabled Analytics in your project, add the Firebase SDK for Google Analytics
+  import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js'
+
+  // Add Firebase products that you want to use
+  import { getAuth } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js'
+  import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js'
 
 // TODO: Replace the following with your app's Firebase project configuration
 // See: https://support.google.com/firebase/answer/7015592
