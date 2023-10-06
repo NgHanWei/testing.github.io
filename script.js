@@ -4,7 +4,7 @@ const firebaseConfig = {
     // authDomain: 'YOUR_AUTH_DOMAIN',
     // projectId: 'YOUR_PROJECT_ID',
     apiKey: "AIzaSyC0TKsUEySiG7W5jugKqIk8jk-tFdRfUcI",
-    authDomain: "sharing-links-16bba.firebaseapp.com",
+    authDomain: "https://nghanwei.github.io/testing.github.io/",
     projectId: "sharing-links-16bba",
     storageBucket: "sharing-links-16bba.appspot.com",
     messagingSenderId: "344679586570",
