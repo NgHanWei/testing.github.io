@@ -6,6 +6,10 @@ const firebaseConfig = {
     apiKey: "AIzaSyC0TKsUEySiG7W5jugKqIk8jk-tFdRfUcI",
     authDomain: "sharing-links-16bba.firebaseapp.com",
     projectId: "sharing-links-16bba",
+    storageBucket: "sharing-links-16bba.appspot.com",
+    messagingSenderId: "344679586570",
+    appId: "1:344679586570:web:4ec00d7fe4956531fcb8f3",
+    measurementId: "G-PS13FLQYQH"
   };
   
   firebase.initializeApp(firebaseConfig);
