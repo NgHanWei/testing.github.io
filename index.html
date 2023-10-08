@@ -1,56 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Firebase Text Data Example</title>
-  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js"></script>
+  <!-- <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js"></script> -->
 </head>
+
 <body>
   <h1>Firebase Text Data Example</h1>
 
+  <label for="usernameInput">Enter Username:</label>
+  <input type="text" id="usernameInput" placeholder="Enter Username">
+  <label for="loadInput">Enter loading data:</label>
+  <input type="text" id="loadInput" placeholder="Enter data to load">
+  <button onclick="loadData()">Load Data</button>
+  <hr>
   <label for="dataInput">Enter text data:</label>
   <input type="text" id="dataInput" placeholder="Enter text">
   <button onclick="saveData()">Save Data</button>
 
-  <hr>
-
-  <button onclick="loadData()">Load Data</button>
   <div id="displayData"></div>
   <script type="module">
-  // import { initializeApp } from "firebase/app";
-  // import { getFirestore } from "firebase/firestore";
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js'
+    // import { initializeApp } from "firebase/app";
+    // import { getFirestore } from "firebase/firestore";
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js'
+    // If you enabled Analytics in your project, add the Firebase SDK for Google Analytics
+    import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js'
+    // Add Firebase products that you want to use
+    import { getAuth } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js'
+    import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js'
 
-  // If you enabled Analytics in your project, add the Firebase SDK for Google Analytics
-  import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js'
+    // TODO: Replace the following with your app's Firebase project configuration
+    // See: https://support.google.com/firebase/answer/7015592
+    const firebaseConfig = {
+      apiKey: "AIzaSyC0TKsUEySiG7W5jugKqIk8jk-tFdRfUcI",
+      authDomain: "sharing-links-16bba.firebaseapp.com",
+      projectId: "sharing-links-16bba",
+      storageBucket: "sharing-links-16bba.appspot.com",
+      messagingSenderId: "344679586570",
+      appId: "1:344679586570:web:4ec00d7fe4956531fcb8f3",
+      measurementId: "G-PS13FLQYQH"
+    };
 
-  // Add Firebase products that you want to use
-  import { getAuth } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js'
-  import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js'
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    console.log(app);
+    // Initialize Cloud Firestore and get a reference to the service
+    const db = getFirestore(app);
+    // const db = firebase.firestore();
+    console.log(db);
 
-// TODO: Replace the following with your app's Firebase project configuration
-// See: https://support.google.com/firebase/answer/7015592
-const firebaseConfig = {
-    apiKey: "AIzaSyC0TKsUEySiG7W5jugKqIk8jk-tFdRfUcI",
-    authDomain: "sharing-links-16bba.firebaseapp.com",
-    projectId: "sharing-links-16bba",
-    storageBucket: "sharing-links-16bba.appspot.com",
-    messagingSenderId: "344679586570",
-    appId: "1:344679586570:web:4ec00d7fe4956531fcb8f3",
-    measurementId: "G-PS13FLQYQH"
-  };
+    import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-
-// Initialize Cloud Firestore and get a reference to the service
-const db = getFirestore(app);
-  db.collection('textData').add({
-      text: 'TESTING'
+    window.saveData = function saveData() {
+      const dataInput = document.getElementById('dataInput').value;
+      console.log(dataInput);
+      const usernameInput = document.getElementById('usernameInput').value;
+      
+      const alphacode = generateRandomCode();
+      console.log(alphacode);
+      setDoc(doc(db, "users", alphacode), {
+      name: dataInput,
+      state: usernameInput,
     })
+      .then(() => {
+        console.log('Text data saved to Firestore.');
+        document.getElementById('dataInput').value = '';
+      })
+      .catch((error) => {
+        console.error('Error saving text data:', error);
+      });
+      
+    };
+
+    window.loadData = function loadData() {
+      const loadInput = document.getElementById('loadInput').value;
+      console.log(loadInput);
+
+      getDoc(doc(db, "users", loadInput)).then(docSnap => {
+        if (docSnap.exists()) {
+          console.log("Document data:", docSnap.data());
+        } else {
+          console.log("No such document!");
+        }
+      })
+    };
+
+    window.generateRandomCode = function generateRandomCode() {
+      const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      const length = 10;
+      let result = '';
+      const charactersLength = charset.length;
+
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charactersLength);
+        result += charset.charAt(randomIndex);
+      }
+
+      return result;
+    };
+
   </script>
+  <!-- <script src="script.js"></script> -->
 </body>
+
 </html>
