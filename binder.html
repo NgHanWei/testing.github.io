@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    table, th, td {
+      border: 1px solid black;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      cursor: grab;
+    }
+
+    .deleteButton {
+      background-color: #ff0000;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      display: none; /* Initially hidden */
+    }
+
+    .pagination {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .pageButton {
+      margin: 0 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
+  <title>Your Binder</title>
+  <script>
+    let currentPage = 0;
+    let tables = [];
+    const itemsPerPage = 9; // Adjust this based on your table format
+
+    function goToLinks() {
+      window.location.href = "index.html";
+    }
+
+    function allowDrop(event) {
+      event.preventDefault();
+    }
+
+    function drag(event) {
+      event.dataTransfer.setData("text", event.target.src);
+    }
+
+    function drop(event) {
+      event.preventDefault();
+      const data = event.dataTransfer.getData("text");
+      const img = document.createElement("img");
+      img.src = data;
+
+      // Create a delete button
+      const deleteButton = document.createElement("button");
+      deleteButton.innerText = "Delete Image";
+      deleteButton.className = "deleteButton";
+      deleteButton.onclick = function() {
+        img.parentNode.removeChild(img);
+        deleteButton.style.display = "none";
+      };
+
+      // Append the image and delete button to the cell
+      event.target.appendChild(img);
+      event.target.appendChild(deleteButton);
+
+      // Make the delete button visible
+      deleteButton.style.display = "inline-block";
+    }
+
+    function deleteImage(imgId, deleteButtonId) {
+      const img = document.getElementById(imgId);
+      const deleteButton = document.getElementById(deleteButtonId);
+      img.parentNode.removeChild(img);
+      deleteButton.style.display = "none";
+    }
+
+    function createTable() {
+      const imageTableContainer = document.getElementById("imageTableContainer");
+      const paginationContainer = document.getElementById("paginationContainer");
+      const selectedFormat = document.getElementById("tableFormat").value;
+
+      let rows, columns;
+
+      // Determine the table format based on user selection
+      if (selectedFormat === "3x3") {
+        rows = 3;
+        columns = 3;
+      } else if (selectedFormat === "3x4") {
+        rows = 3;
+        columns = 4;
+      }
+
+      // Create a new table
+      const table = document.createElement("table");
+      table.style.width = "100%";
+      const tbody = document.createElement("tbody");
+
+      // Loop through the table cells and set the image URLs for the current page
+      for (let i = 0; i < rows; i++) {
+        const row = table.insertRow(i);
+        for (let j = 0; j < columns; j++) {
+          const cell = row.insertCell(j);
+          cell.setAttribute("ondragover", "allowDrop(event)");
+          cell.setAttribute("ondrop", "drop(event)");
+
+          const img = document.createElement("img");
+          const imgId = `img${i}${j}`;
+          img.id = imgId;
+          img.src = ''; // Clear any remaining cells
+          img.draggable = true;
+          img.ondragstart = drag;
+
+          // Create a delete button
+          const deleteButton = document.createElement("button");
+          const deleteButtonId = `deleteButton${imgId}`;
+          deleteButton.id = deleteButtonId;
+          deleteButton.innerText = "Delete Image";
+          deleteButton.className = "deleteButton";
+          deleteButton.onclick = function() {
+            img.src = ''; // Clear the image source
+            deleteButton.style.display = "none";
+          };
+
+          // Append the image to the cell
+          cell.appendChild(img);
+          
+          // Append the delete button to the cell
+          cell.appendChild(deleteButton);
+        }
+      }
+
+      // Add the table to the array for pagination
+      tables.push(table);
+
+      // Clear previous tables and pagination buttons
+      imageTableContainer.innerHTML = '';
+      paginationContainer.innerHTML = '';
+
+      // Add tables to the container
+      for (let i = 0; i < tables.length; i++) {
+        const isVisible = i === currentPage;
+        tables[i].style.display = isVisible ? "block" : "none";
+        imageTableContainer.appendChild(tables[i]);
+      }
+
+      // Create pagination buttons
+      const pagination = document.createElement("div");
+      pagination.className = "pagination";
+      for (let page = 0; page < tables.length; page++) {
+        const pageButton = document.createElement("button");
+        pageButton.className = "pageButton";
+        pageButton.innerText = page + 1;
+        pageButton.onclick = function() {
+          showPage(page);
+        };
+
+        pagination.appendChild(pageButton);
+      }
+
+      // Append pagination to the container
+      paginationContainer.appendChild(pagination);
+    }
+
+    function showPage(page) {
+      currentPage = page;
+
+      // Show the clicked page and hide others
+      for (let p = 0; p < tables.length; p++) {
+        const isVisible = p === currentPage;
+        tables[p].style.display = isVisible ? "block" : "none";
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>Binder</h1>
+  <button onclick="goToLinks()">Go to Saved Links</button>
+  <h1>Image Display Table</h1>
+
+  <label for="tableFormat">Choose table format:</label>
+  <select id="tableFormat">
+    <option value="3x3">3x3</option>
+    <option value="3x4">3x4</option>
+  </select>
+
+  <button onclick="createTable()">Create Table</button>
+
+  <div id="imageTableContainer"></div>
+  <div id="paginationContainer" class="pagination"></div>
+</body>
+</html>
