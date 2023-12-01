@@ -2,6 +2,15 @@
 <html>
 <head>
   <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      margin: 0;
+    }
+
     table {
       border-collapse: collapse;
       width: 100%;
@@ -42,12 +51,22 @@
       padding: 5px 10px;
       cursor: pointer;
     }
+
+    #clearAllPages {
+      margin-top: 20px;
+      background-color: #ff0000;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+    }
   </style>
   <title>Your Binder</title>
   <script>
     let currentPage = 0;
     let tables = [];
     const itemsPerPage = 9; // Adjust this based on your table format
+    let storageLoaded = false;
 
     function goToLinks() {
       window.location.href = "index.html";
@@ -66,6 +85,8 @@
       const data = event.dataTransfer.getData("text");
       const img = document.createElement("img");
       img.src = data;
+      img.style.width = "150px";
+      img.style.height = "150px";
 
       // Create a delete button
       const deleteButton = document.createElement("button");
@@ -106,6 +127,9 @@
         rows = 3;
         columns = 4;
       }
+
+      // Calculate the total number of pages
+      const totalPages = Math.ceil((rows * columns) / itemsPerPage);
 
       // Create a new table
       const table = document.createElement("table");
@@ -176,17 +200,88 @@
 
       // Append pagination to the container
       paginationContainer.appendChild(pagination);
+
+      // Save data to localStorage
+      saveDataToStorage();
     }
 
     function showPage(page) {
       currentPage = page;
 
-      // Show the clicked page and hide others
-      for (let p = 0; p < tables.length; p++) {
-        const isVisible = p === currentPage;
-        tables[p].style.display = isVisible ? "block" : "none";
+      // console.log(tables);
+      // console.log(currentPage);
+
+      // Ensure the tables array is not empty before accessing elements
+      if (tables.length > 0) {
+        // Show the clicked page and hide others
+        for (let p = 0; p < tables.length; p++) {
+          const isVisible = p === currentPage;
+          tables[p].style.display = isVisible ? "block" : "none";
+        }
       }
     }
+
+    function clearAllPages() {
+      // Clear all tables and pagination buttons
+      tables = [];
+      currentPage = 0;
+      const imageTableContainer = document.getElementById("imageTableContainer");
+      const paginationContainer = document.getElementById("paginationContainer");
+      imageTableContainer.innerHTML = '';
+      paginationContainer.innerHTML = '';
+
+      // Clear data from localStorage
+      clearStorage();
+    }
+
+    function saveDataToStorage() {
+      // Save tables data to localStorage
+      console.log(tables);
+      console.log(currentPage);
+      localStorage.setItem("tables", JSON.stringify(tables));
+      localStorage.setItem("currentPage", JSON.stringify(currentPage));
+      const storedTables = localStorage.getItem("tables");
+      const storedCurrentPage = localStorage.getItem("currentPage");
+
+      console.log(storedTables);
+      console.log(storedCurrentPage);
+    }
+
+    function loadDataFromStorage() {
+      // Load data from localStorage if not loaded already
+      if (!storageLoaded) {
+        const storedTables = localStorage.getItem("tables");
+        const storedCurrentPage = localStorage.getItem("currentPage");
+
+        console.log(storedTables);
+        console.log(storedCurrentPage);
+
+        if (storedTables) {
+          tables = JSON.parse(storedTables);
+          currentPage = JSON.parse(storedCurrentPage) || 0;
+
+          const table = document.createElement("table");
+          table.style.width = "100%";
+          for (var i = 0; i < tables.length; i++) {
+            tables[i] = table
+          }
+
+          // Show the loaded page
+          showPage(currentPage);
+        }
+
+        storageLoaded = true;
+      }
+    }
+
+    function clearStorage() {
+      // Clear data from localStorage
+      localStorage.removeItem("tables");
+      localStorage.removeItem("currentPage");
+    }
+
+    // Load data from localStorage on page load
+    window.onload = loadDataFromStorage;
   </script>
 </head>
 <body>
@@ -202,7 +297,11 @@
 
   <button onclick="createTable()">Create Table</button>
 
-  <div id="imageTableContainer"></div>
+  <button id="clearAllPages" onclick="clearAllPages()">Clear All Pages</button>
+
+  <br>
+
+  <div id="imageTableContainer" style="text-align: center;"></div>
   <div id="paginationContainer" class="pagination"></div>
 </body>
 </html>
