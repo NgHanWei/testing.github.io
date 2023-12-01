@@ -208,16 +208,10 @@
     function showPage(page) {
       currentPage = page;
 
-      // console.log(tables);
-      // console.log(currentPage);
-
-      // Ensure the tables array is not empty before accessing elements
-      if (tables.length > 0) {
-        // Show the clicked page and hide others
-        for (let p = 0; p < tables.length; p++) {
-          const isVisible = p === currentPage;
-          tables[p].style.display = isVisible ? "block" : "none";
-        }
+      // Show the clicked page and hide others
+      for (let p = 0; p < tables.length; p++) {
+        const isVisible = p === currentPage;
+        tables[p].style.display = isVisible ? "block" : "none";
       }
     }
 
@@ -236,15 +230,9 @@
 
     function saveDataToStorage() {
       // Save tables data to localStorage
-      console.log(tables);
-      console.log(currentPage);
-      localStorage.setItem("tables", JSON.stringify(tables));
+      const tableData = tables.map(table => table.outerHTML);
+      localStorage.setItem("tables", JSON.stringify(tableData));
       localStorage.setItem("currentPage", JSON.stringify(currentPage));
-      const storedTables = localStorage.getItem("tables");
-      const storedCurrentPage = localStorage.getItem("currentPage");
-
-      console.log(storedTables);
-      console.log(storedCurrentPage);
     }
 
     function loadDataFromStorage() {
@@ -253,18 +241,14 @@
         const storedTables = localStorage.getItem("tables");
         const storedCurrentPage = localStorage.getItem("currentPage");
 
-        console.log(storedTables);
-        console.log(storedCurrentPage);
-
         if (storedTables) {
-          tables = JSON.parse(storedTables);
+          const parsedTables = JSON.parse(storedTables);
+          tables = parsedTables.map(html => {
+            const tempTable = document.createElement('table');
+            tempTable.innerHTML = html;
+            return tempTable;
+          });
           currentPage = JSON.parse(storedCurrentPage) || 0;
-
-          const table = document.createElement("table");
-          table.style.width = "100%";
-          for (var i = 0; i < tables.length; i++) {
-            tables[i] = table
-          }
 
           // Show the loaded page
           showPage(currentPage);
@@ -298,8 +282,6 @@
   <button onclick="createTable()">Create Table</button>
 
   <button id="clearAllPages" onclick="clearAllPages()">Clear All Pages</button>
-
-  <br>
 
   <div id="imageTableContainer" style="text-align: center;"></div>
   <div id="paginationContainer" class="pagination"></div>
