@@ -95,6 +95,7 @@
       deleteButton.onclick = function() {
         img.parentNode.removeChild(img);
         deleteButton.style.display = "none";
+        saveDataToStorage(); // Save data after deleting an image
       };
 
       // Append the image and delete button to the cell
@@ -103,13 +104,24 @@
 
       // Make the delete button visible
       deleteButton.style.display = "inline-block";
+
+      saveDataToStorage(); // Save data after dropping an image
     }
 
     function deleteImage(imgId, deleteButtonId) {
       const img = document.getElementById(imgId);
       const deleteButton = document.getElementById(deleteButtonId);
-      img.parentNode.removeChild(img);
+      const cell = img.parentNode; // Get the parent cell
+
+      // Remove all child elements (images and buttons) from the cell
+      while (cell.firstChild) {
+        cell.removeChild(cell.firstChild);
+      }
+
+      // Make the delete button visible
       deleteButton.style.display = "none";
+
+      saveDataToStorage(); // Save data after deleting content from the cell
     }
 
     function createTable() {
@@ -160,6 +172,7 @@
           deleteButton.onclick = function() {
             img.src = ''; // Clear the image source
             deleteButton.style.display = "none";
+            saveDataToStorage(); // Save data after deleting an image
           };
 
           // Append the image to the cell
@@ -201,8 +214,7 @@
       // Append pagination to the container
       paginationContainer.appendChild(pagination);
 
-      // Save data to localStorage
-      saveDataToStorage();
+      saveDataToStorage(); // Save data after creating a table
     }
 
     function showPage(page) {
@@ -229,26 +241,28 @@
     }
 
     function saveDataToStorage() {
-      // Save tables data to localStorage
-      const tableData = tables.map(table => table.outerHTML);
-      localStorage.setItem("tables", JSON.stringify(tableData));
-      localStorage.setItem("currentPage", JSON.stringify(currentPage));
+      // Save the entire state to localStorage
+      const state = {
+        currentPage,
+        tables: tables.map(table => table.outerHTML),
+      };
+      localStorage.setItem("state", JSON.stringify(state));
     }
 
     function loadDataFromStorage() {
-      // Load data from localStorage if not loaded already
+      // Load the entire state from localStorage if not loaded already
       if (!storageLoaded) {
-        const storedTables = localStorage.getItem("tables");
-        const storedCurrentPage = localStorage.getItem("currentPage");
+        const storedState = localStorage.getItem("state");
 
-        if (storedTables) {
-          const parsedTables = JSON.parse(storedTables);
-          tables = parsedTables.map(html => {
+        if (storedState) {
+          const parsedState = JSON.parse(storedState);
+          currentPage = parsedState.currentPage;
+
+          tables = parsedState.tables.map(html => {
             const tempTable = document.createElement('table');
             tempTable.innerHTML = html;
             return tempTable;
           });
-          currentPage = JSON.parse(storedCurrentPage) || 0;
 
           // Show the loaded page
           showPage(currentPage);
@@ -260,8 +274,7 @@
 
     function clearStorage() {
       // Clear data from localStorage
-      localStorage.removeItem("tables");
-      localStorage.removeItem("currentPage");
+      localStorage.removeItem("state");
     }
 
     // Load data from localStorage on page load
